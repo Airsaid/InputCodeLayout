@@ -24,6 +24,8 @@
             <enum name="normal" value="0"/><!--正常-->
             <enum name="password" value="1"/><!--密码-->
         </attr>
+        <!--输入框显示位置-->
+        <attr name="android:gravity"/>
     </declare-styleable>
 
 </resources>

@@ -4,28 +4,88 @@
               xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:gravity="center"
               android:orientation="vertical"
+              android:padding="20dp"
               tools:context=".MainActivity">
 
     <com.github.airsaid.inputcodelayout.widget.InputCodeLayout
         android:id="@+id/inputCodeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="50dp"
         android:gravity="center"
         app:icl_divideWidth="10dp"
         app:icl_focusBackground="@drawable/bg_edit_focus"
+        app:icl_height="40dp"
         app:icl_number="4"
         app:icl_showMode="password"
         app:icl_textColor="@color/colorPrimaryDark"
         app:icl_textSize="16sp"
-        app:icl_unFocusBackground="@drawable/bg_edit_un_focus"/>
+        app:icl_unFocusBackground="@drawable/bg_edit_un_focus"
+        app:icl_width="40dp"/>
 
-    <Button
+    <TextView
+        android:id="@+id/txt_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="20dp"
+        android:text="修改输入框数量(4)"/>
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/sbr_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="8"
+        android:progress="4"/>
+
+    <TextView
+        android:id="@+id/txt_divide_width"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="修改输入框间距(10)"/>
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/sbr_divide_width"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="20"
+        android:progress="10"/>
+
+    <TextView
+        android:id="@+id/txt_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="修改输入框大小(40)"/>
+
+    <android.support.v7.widget.AppCompatSeekBar
+        android:id="@+id/sbr_size"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="80"
+        android:progress="40"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="提示（如不设置大小则输入框大小按照控件宽度均分）"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:onClick="normal"
+        android:text="设置明文显示模式"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="password"
+        android:text="设置密码显示模式"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:onClick="clear"
-        android:text="clear"/>
+        android:text="清空输入"/>
 </LinearLayout>

@@ -17,6 +17,8 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -26,6 +28,10 @@ import com.github.airsaid.inputcodelayout.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import static android.R.attr.gravity;
+import static android.R.attr.width;
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 /**
  * @author airsaid
@@ -78,41 +84,42 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     public InputCodeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
-        initAttrs(attrs);
         initViews();
+        initAttrs(attrs);
         initListener();
     }
 
     private void initAttrs(AttributeSet attrs) {
         TypedArray a = mContext.obtainStyledAttributes(attrs, R.styleable.InputCodeLayout);
-        mNumber = a.getInt(R.styleable.InputCodeLayout_icl_number, 4);
+        mNumber = a.getInt(R.styleable.InputCodeLayout_icl_number, -1);
         mWidth = a.getDimensionPixelSize(R.styleable.InputCodeLayout_icl_width, -1);
         mHeight = a.getDimensionPixelSize(R.styleable.InputCodeLayout_icl_height, -1);
-        mDivideWidth = a.getDimensionPixelSize(R.styleable.InputCodeLayout_icl_divideWidth, -1);
+        int divideWidth = a.getDimensionPixelSize(R.styleable.InputCodeLayout_icl_divideWidth, -1);
+        if(divideWidth != -1) setDivideWidth(divideWidth);
         mTextColor = a.getColor(R.styleable.InputCodeLayout_icl_textColor, -1);
-        mTextSize = a.getDimensionPixelSize(R.styleable.InputCodeLayout_icl_textSize, 16);
+        mTextSize = a.getDimensionPixelSize(R.styleable.InputCodeLayout_icl_textSize, 14);
         mFocusBackground = a.getResourceId(R.styleable.InputCodeLayout_icl_focusBackground, -1);
         mUnFocusBackground = a.getResourceId(R.styleable.InputCodeLayout_icl_unFocusBackground, -1);
         mShowMode = a.getInt(R.styleable.InputCodeLayout_icl_showMode, NORMAL);
+        int gravity = a.getInt(R.styleable.InputCodeLayout_android_gravity, -1);
+        if(gravity != -1) setGravity(gravity);
         a.recycle();
     }
 
     private void initViews() {
-        LayoutInflater.from(mContext).inflate(R.layout.layout_input_code, this, true);
-        mContainer = (LinearLayout) findViewById(R.id.container);
-        mEdtCode = (EditText) findViewById(R.id.edt_code);
-        // 隐藏光标
-        mEdtCode.setCursorVisible(false);
-        // 设置输入最大长度
-        mEdtCode.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mNumber)});
-        // 设置间距
-        mContainer.setDividerDrawable(createDivideShape());
-    }
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        mContainer = new LinearLayout(mContext);
+        mContainer.setLayoutParams(params);
+        mContainer.setOrientation(LinearLayout.HORIZONTAL);
+        mContainer.setShowDividers(LinearLayout.SHOW_DIVIDER_MIDDLE);
+        addView(mContainer);
 
-    private Drawable createDivideShape() {
-        GradientDrawable shape = new GradientDrawable();
-        shape.setSize(mDivideWidth, 0);
-        return shape;
+        mEdtCode = new EditText(mContext);
+        mEdtCode.setLayoutParams(params);
+        mEdtCode.setCursorVisible(false);
+        mEdtCode.setInputType(EditorInfo.TYPE_CLASS_NUMBER);
+        mEdtCode.setBackgroundResource(android.R.color.transparent);
+        addView(mEdtCode);
     }
 
     private void initListener() {
@@ -202,18 +209,17 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     private void initTextView() {
-        int measuredWidth = mContainer.getMeasuredWidth();
-        Log.e("test", "measuredWidth: " + measuredWidth);
+        if(mNumber <= 0) return;
 
+        int measuredWidth = mContainer.getMeasuredWidth();
         // 均分情况下，根据控件的宽度计算输入框的高度
         int height = (measuredWidth - (mDivideWidth * (mNumber - 1))) / mNumber;
-        Log.e("test", "height: " + height);
-
 
         mTextViews = new TextView[mNumber];
         mContainer.removeAllViews();
         for (int i = 0; i < mNumber; i++) {
             final TextView textView = new TextView(mContext);
+
             // 判断如果没有设置宽高，则根据控件宽度均分
             if (mWidth != -1 && mHeight != -1) {
                 textView.setWidth(mWidth);
@@ -223,27 +229,19 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
                         LinearLayout.LayoutParams.WRAP_CONTENT + mDivideWidth, height, 1);
                 textView.setLayoutParams(lp);
             }
+
             if (mTextSize != -1)
                 textView.getPaint().setTextSize(mTextSize);
             if (mTextColor != -1)
                 textView.setTextColor(mTextColor);
             if (mFocusBackground != -1 && mUnFocusBackground != -1)
                 textView.setBackgroundResource(i != 0 ? mUnFocusBackground : mFocusBackground);
-            if (mShowMode == NORMAL)
-                textView.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            else
-                textView.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
             textView.setGravity(Gravity.CENTER);
             textView.setFocusable(false);
+            setShowMode(textView);
             mTextViews[i] = textView;
             mContainer.addView(textView);
-
-            textView.post(new Runnable() {
-                @Override
-                public void run() {
-                    Log.e("test", "textview width: " + textView.getMeasuredWidth());
-                }
-            });
         }
 
         mContainer.post(new Runnable() {
@@ -252,7 +250,57 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
                 mEdtCode.setHeight(mContainer.getMeasuredHeight());
             }
         });
+    }
 
+    /**
+     * 设置输入框数量.
+     * @param number 输入框数量
+     */
+    public void setNumber(int number){
+        if(mNumber != number){
+            mNumber = number;
+            mEdtCode.setFilters(new InputFilter[]{new InputFilter.LengthFilter(mNumber)});
+            onFinishInflate();
+        }
+    }
+
+    /**
+     * 设置分割线宽度.
+     * @param width 分割线宽度
+     */
+    public void setDivideWidth(int width){
+        if(width != mDivideWidth){
+            mDivideWidth = width;
+            mContainer.setDividerDrawable(createDivideShape(mDivideWidth));
+        }
+    }
+
+    private Drawable createDivideShape(int width) {
+        GradientDrawable shape = new GradientDrawable();
+        shape.setSize(width, 0);
+        return shape;
+    }
+
+    /**
+     * 设置输入框宽度.（如果宽度 == -1, 则输入框大小按照控件的宽度来均分）
+     * @param width 输入框宽度
+     */
+    public void setWidth(int width){
+        if(mWidth != width){
+            mWidth = width;
+            onFinishInflate();
+        }
+    }
+
+    /**
+     * 设置输入框高度.（如果高度 == -1, 则输入框大小按照控件的宽度来均分）
+     * @param height 输入框高度
+     */
+    public void setHeight(int height){
+        if(mHeight != height){
+            mHeight = height;
+            onFinishInflate();
+        }
     }
 
     /**
@@ -264,8 +312,26 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     public void setShowMode(@ShowMode int showMode) {
         if (mShowMode != showMode) {
             mShowMode = showMode;
-            invalidate();
+            for (TextView textView : mTextViews) {
+                setShowMode(textView);
+            }
         }
+    }
+
+    private void setShowMode(TextView textView){
+        if (mShowMode == NORMAL)
+            textView.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+        else
+            textView.setTransformationMethod(PasswordTransformationMethod.getInstance());
+    }
+
+    /**
+     * 设置输入框的摆放位置.
+     * @param gravity 请参阅 {@link android.view.Gravity}
+     */
+    public void setGravity(int gravity) {
+        if(mContainer != null)
+            mContainer.setGravity(gravity);
     }
 
     /**
