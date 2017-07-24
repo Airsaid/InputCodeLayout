@@ -2,7 +2,7 @@
 这是一个 Android 上输入验证码的自定义布局.
 
 ## 预览
-![](https://github.com/Airsaid/InputCodeLayout/blob/master/preview.gif)
+![](https://github.com/Airsaid/InputCodeLayout/blob/master/preview/preview.gif)
 
 ## 使用
 - 布局中：
