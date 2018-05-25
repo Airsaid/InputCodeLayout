@@ -2,7 +2,6 @@ package com.github.airsaid.inputcodelayout;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatSeekBar;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
@@ -13,7 +12,7 @@ import com.github.airsaid.inputcodelayout.widget.InputCodeLayout;
 
 public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener {
 
-    public static final String TAG = "MainActivity";
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private InputCodeLayout mInputCodeLayout;
 
@@ -26,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         ((SeekBar) findViewById(R.id.sbr_divide_width)).setOnSeekBarChangeListener(this);
         ((SeekBar) findViewById(R.id.sbr_size)).setOnSeekBarChangeListener(this);
 
-        mInputCodeLayout = (InputCodeLayout) findViewById(R.id.inputCodeLayout);
+        mInputCodeLayout = findViewById(R.id.inputCodeLayout);
         mInputCodeLayout.setOnInputCompleteListener(new InputCodeLayout.OnInputCompleteCallback() {
             @Override
             public void onInputCompleteListener(String code) {
@@ -36,33 +35,33 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
         });
     }
 
-    public void normal(View v){
+    public void normal(View v) {
         mInputCodeLayout.setShowMode(InputCodeLayout.NORMAL);
     }
 
-    public void password(View v){
+    public void password(View v) {
         mInputCodeLayout.setShowMode(InputCodeLayout.PASSWORD);
     }
 
-    public void clear(View v){
+    public void clear(View v) {
         mInputCodeLayout.clear();
     }
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        switch (seekBar.getId()){
+        switch (seekBar.getId()) {
             case R.id.sbr_number:
                 mInputCodeLayout.setNumber(progress);
-                ((TextView)findViewById(R.id.txt_number)).setText("修改输入框数量("+progress+")");
+                ((TextView) findViewById(R.id.txt_number)).setText("修改输入框数量(" + progress + ")");
                 break;
             case R.id.sbr_divide_width:
                 mInputCodeLayout.setDivideWidth(dp2px(progress));
-                ((TextView)findViewById(R.id.txt_divide_width)).setText("修改输入框间距("+progress+")");
+                ((TextView) findViewById(R.id.txt_divide_width)).setText("修改输入框间距(" + progress + ")");
                 break;
             case R.id.sbr_size:
                 mInputCodeLayout.setWidth(dp2px(progress));
                 mInputCodeLayout.setHeight(dp2px(progress));
-                ((TextView)findViewById(R.id.txt_size)).setText("修改输入框大小("+progress+")");
+                ((TextView) findViewById(R.id.txt_size)).setText("修改输入框大小(" + progress + ")");
                 break;
         }
     }
@@ -77,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements SeekBar.OnSeekBar
 
     }
 
-    public int dp2px(float dpValue){
-        return (int)(dpValue * (getResources().getDisplayMetrics().density) + 0.5f);
+    public int dp2px(float dpValue) {
+        return (int) (dpValue * (getResources().getDisplayMetrics().density) + 0.5f);
     }
 }

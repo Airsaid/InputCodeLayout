@@ -12,12 +12,9 @@ import android.text.TextWatcher;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -29,21 +26,14 @@ import com.github.airsaid.inputcodelayout.R;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import static android.R.attr.gravity;
-import static android.R.attr.width;
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-
 /**
  * @author airsaid
- * @github https://github.com/airsaid
- * @date 2017/7/21
- * @desc 自定义输入验证码布局
  */
 public class InputCodeLayout extends RelativeLayout implements TextWatcher, View.OnKeyListener {
 
     @IntDef({NORMAL, PASSWORD})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ShowMode {}
+    @interface ShowMode {}
 
     public static final int NORMAL = 0;
     public static final int PASSWORD = 1;
@@ -70,8 +60,8 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     private int mShowMode;
 
     private LinearLayout mContainer;
-    private EditText mEdtCode;
     private TextView[] mTextViews;
+    private EditText mEdtCode;
 
     public InputCodeLayout(Context context) {
         this(context, null);
@@ -150,7 +140,7 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 设置验证码
+     * 设置验证码。
      *
      * @param code 验证码
      */
@@ -178,7 +168,7 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 删除验证码
+     * 删除验证码。
      */
     private void deleteCode() {
         for (int i = mTextViews.length - 1; i >= 0; i--) {
@@ -253,7 +243,8 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 设置输入框数量.
+     * 设置输入框数量。
+     *
      * @param number 输入框数量
      */
     public void setNumber(int number){
@@ -265,7 +256,8 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 设置分割线宽度.
+     * 设置分割线宽度。
+     *
      * @param width 分割线宽度
      */
     public void setDivideWidth(int width){
@@ -282,7 +274,8 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 设置输入框宽度.（如果宽度 == -1, 则输入框大小按照控件的宽度来均分）
+     * 设置输入框宽度。（如果宽度 == -1, 则输入框大小按照控件的宽度来均分）
+     *
      * @param width 输入框宽度
      */
     public void setWidth(int width){
@@ -293,7 +286,8 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 设置输入框高度.（如果高度 == -1, 则输入框大小按照控件的宽度来均分）
+     * 设置输入框高度。（如果高度 == -1, 则输入框大小按照控件的宽度来均分）
+     *
      * @param height 输入框高度
      */
     public void setHeight(int height){
@@ -304,7 +298,7 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 设置显示模式.
+     * 设置显示模式。
      *
      * @param showMode 通过 {@link #NORMAL} 或者 {@link #PASSWORD} 设置
      *                 默认是 {@link #NORMAL}
@@ -326,7 +320,8 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 设置输入框的摆放位置.
+     * 设置输入框的摆放位置。
+     *
      * @param gravity 请参阅 {@link android.view.Gravity}
      */
     public void setGravity(int gravity) {
@@ -335,7 +330,7 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 获取已经输入的验证码
+     * 获取已经输入的验证码。
      *
      * @return 验证码
      */
@@ -348,7 +343,7 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     }
 
     /**
-     * 清空输入框
+     * 清空输入框。
      */
     public void clear() {
         for (int i = 0; i < mTextViews.length; i++) {
@@ -361,11 +356,16 @@ public class InputCodeLayout extends RelativeLayout implements TextWatcher, View
     private OnInputCompleteCallback mOnInputCompleteCallback;
 
     public interface OnInputCompleteCallback {
+        /**
+         * 输入完成监听。
+         *
+         * @param code 输入的验证码
+         */
         void onInputCompleteListener(String code);
     }
 
     /**
-     * 设置输入完成监听
+     * 设置输入完成监听。
      *
      * @param callback 回调
      */
